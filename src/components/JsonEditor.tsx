@@ -15,6 +15,9 @@ import {
   X,
   ArrowDownToLine,
   ExternalLink,
+  CheckCircle2,
+  Clock,
+  Globe,
 } from 'lucide-react';
 import { DEFAULT_FLOW_JSON } from '../types';
 import type { FlowValidationError } from '../types';
@@ -24,6 +27,7 @@ interface JsonEditorProps {
   onChange: (val: string) => void;
   targetFlowId: string;
   targetFlowName?: string;
+  targetFlowStatus?: string;
   onTargetFlowIdChange: (id: string) => void;
   onUpload: () => void;
   isUploading: boolean;
@@ -40,6 +44,7 @@ export function JsonEditor({
   onChange,
   targetFlowId,
   targetFlowName,
+  targetFlowStatus,
   onTargetFlowIdChange,
   onUpload,
   isUploading,
@@ -408,6 +413,70 @@ export function JsonEditor({
             )}
             <span>{isPublishing ? 'Publishing...' : 'Publish Flow'}</span>
           </button>
+
+          {/* Flow Publish Status Indicator (Side of Publish Button) */}
+          {targetFlowId.trim() && (
+            <div
+              title={
+                targetFlowStatus === 'PUBLISHED'
+                  ? 'Flow is published and live on WhatsApp'
+                  : targetFlowStatus === 'DRAFT'
+                  ? 'Flow is currently in Draft mode (not published)'
+                  : `Status: ${targetFlowStatus || 'Draft'}`
+              }
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+                padding: '5px 10px',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+                background:
+                  targetFlowStatus === 'PUBLISHED'
+                    ? 'rgba(37, 211, 102, 0.12)'
+                    : targetFlowStatus === 'DRAFT' || !targetFlowStatus
+                    ? 'rgba(245, 158, 11, 0.12)'
+                    : targetFlowStatus === 'DEPRECATED'
+                    ? 'rgba(239, 68, 68, 0.12)'
+                    : 'rgba(122, 144, 176, 0.1)',
+                color:
+                  targetFlowStatus === 'PUBLISHED'
+                    ? 'var(--accent-green)'
+                    : targetFlowStatus === 'DRAFT' || !targetFlowStatus
+                    ? 'var(--accent-orange)'
+                    : targetFlowStatus === 'DEPRECATED'
+                    ? 'var(--accent-red)'
+                    : 'var(--text-secondary)',
+                border: `1px solid ${
+                  targetFlowStatus === 'PUBLISHED'
+                    ? 'rgba(37, 211, 102, 0.35)'
+                    : targetFlowStatus === 'DRAFT' || !targetFlowStatus
+                    ? 'rgba(245, 158, 11, 0.35)'
+                    : targetFlowStatus === 'DEPRECATED'
+                    ? 'rgba(239, 68, 68, 0.35)'
+                    : 'var(--border-color)'
+                }`,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {targetFlowStatus === 'PUBLISHED' ? (
+                <Globe size={13} color="var(--accent-green)" />
+              ) : targetFlowStatus === 'DRAFT' || !targetFlowStatus ? (
+                <Clock size={13} color="var(--accent-orange)" />
+              ) : (
+                <CheckCircle2 size={13} />
+              )}
+              <span>
+                {targetFlowStatus === 'PUBLISHED'
+                  ? 'PUBLISHED'
+                  : targetFlowStatus === 'DRAFT' || !targetFlowStatus
+                  ? 'DRAFT (NOT PUBLISHED)'
+                  : targetFlowStatus}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

@@ -309,7 +309,9 @@ function App() {
     setTimeout(() => setCopiedFlowId(false), 2000);
   };
 
-  const currentDisplayFlowName = selectedFlow?.id === targetFlowId ? selectedFlow.name : undefined;
+  const matchedFlow = selectedFlow?.id === targetFlowId ? selectedFlow : flows.find(f => f.id === targetFlowId);
+  const currentDisplayFlowName = matchedFlow?.name;
+  const currentDisplayFlowStatus = matchedFlow?.status;
 
   if (!isStarted) {
     return (
@@ -628,6 +630,7 @@ function App() {
             onChange={setJsonStr}
             targetFlowId={targetFlowId}
             targetFlowName={currentDisplayFlowName}
+            targetFlowStatus={currentDisplayFlowStatus}
             onTargetFlowIdChange={setTargetFlowId}
             onUpload={handleUploadFlowJson}
             isUploading={isUploadingJson}
