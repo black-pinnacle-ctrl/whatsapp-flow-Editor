@@ -7,10 +7,18 @@ import type {
   PublishFlowResponse,
 } from './types';
 
-// Always use proxy path '/api-pinbot' (handled by Vite in dev and server.js in production)
-// This prevents cross-origin CORS errors in the browser.
+const PINBOT_API_BASE = 'https://partnersv1.pinbot.ai/v3/flows';
+
+// On localhost development, use Vite proxy to prevent CORS issues.
+// In production deployment (e.g. on Render), use direct Pinbot API endpoint.
 const getBaseUrl = () => {
-  return '/api-pinbot/v3/flows';
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ) {
+    return '/api-pinbot/v3/flows';
+  }
+  return PINBOT_API_BASE;
 };
 
 export async function createFlow(
@@ -86,8 +94,12 @@ export async function getFlowAssets(
 
 export async function fetchFlowJsonFromUrl(downloadUrl: string): Promise<unknown> {
   let targetUrl = downloadUrl;
-  // If in browser and URL is from mmg.whatsapp.net, use Vite proxy to prevent CORS error
-  if (typeof window !== 'undefined' && downloadUrl.startsWith('https://mmg.whatsapp.net')) {
+  // If in localhost dev, use Vite proxy to prevent CORS error
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') &&
+    downloadUrl.startsWith('https://mmg.whatsapp.net')
+  ) {
     targetUrl = downloadUrl.replace('https://mmg.whatsapp.net', '/api-whatsapp-mmg');
   }
 
