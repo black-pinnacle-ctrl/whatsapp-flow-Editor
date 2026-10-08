@@ -493,6 +493,7 @@ function App() {
             onWabaIdChange={setWabaId}
             onApiKeyChange={setApiKey}
             onReset={handleReset}
+            onSwitchAccount={() => setIsStarted(false)}
           />
 
           {/* Navigation Tab Switcher */}

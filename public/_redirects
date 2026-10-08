@@ -1,0 +1,3 @@
+/api-pinbot/* https://partnersV1.pinbot.ai/:splat 200
+/api-whatsapp-mmg/* https://mmg.whatsapp.net/:splat 200
+/* /index.html 200

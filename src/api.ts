@@ -7,13 +7,10 @@ import type {
   PublishFlowResponse,
 } from './types';
 
-// In browser development, use the Vite proxy path '/api-pinbot' to avoid CORS issues.
-// Fallback to direct URL if running outside Vite proxy.
+// Always use proxy path '/api-pinbot' (handled by Vite in dev and server.js in production)
+// This prevents cross-origin CORS errors in the browser.
 const getBaseUrl = () => {
-  if (typeof window !== 'undefined' && window.location.port) {
-    return '/api-pinbot/v3/flows';
-  }
-  return 'https://partnersV1.pinbot.ai/v3/flows';
+  return '/api-pinbot/v3/flows';
 };
 
 export async function createFlow(
