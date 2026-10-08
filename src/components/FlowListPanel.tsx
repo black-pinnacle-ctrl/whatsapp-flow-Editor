@@ -102,7 +102,8 @@ export function FlowListPanel({
         borderRadius: 'var(--radius-lg)',
         display: 'flex',
         flexDirection: 'column',
-        maxHeight: '480px',
+        flex: 1,
+        minHeight: '350px',
         overflow: 'hidden',
       }}
     >

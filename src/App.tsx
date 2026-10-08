@@ -584,36 +584,6 @@ function App() {
               />
             </>
           )}
-
-          {/* Quick Guide Card */}
-          <div style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border-color)',
-            borderRadius: 'var(--radius-md)',
-            padding: '12px 14px',
-          }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 8, letterSpacing: '0.06em' }}>
-              HOW TO UPDATE & PUBLISH
-            </div>
-            {[
-              ['1', 'Select a Flow or enter its ID in "Target Flow ID"'],
-              ['2', 'Import your file (e.g. registor.json) or edit directly'],
-              ['3', 'Check the live phone preview on the right'],
-              ['4', 'Click "Update Flow JSON" to push via POST /assets'],
-              ['5', 'Click "Publish Flow" to make it live (POST /publish)'],
-            ].map(([num, text]) => (
-              <div key={num} style={{ display: 'flex', gap: 8, marginBottom: 6, alignItems: 'flex-start' }}>
-                <div style={{
-                  width: 16, height: 16, background: 'var(--accent-green-glow)', border: '1px solid rgba(37,211,102,0.3)',
-                  borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 9, fontWeight: 700, color: 'var(--accent-green)', flexShrink: 0,
-                }}>
-                  {num}
-                </div>
-                <span style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.4 }}>{text}</span>
-              </div>
-            ))}
-          </div>
         </aside>
 
         {/* Center — JSON Editor */}
