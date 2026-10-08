@@ -17,6 +17,7 @@ import { FlowListPanel } from './components/FlowListPanel';
 import { JsonEditor } from './components/JsonEditor';
 import { FlowPreview } from './components/FlowPreview';
 import { ApiResponsePanel } from './components/ApiResponsePanel';
+import { StartingPage } from './components/StartingPage';
 import {
   MessageSquare,
   Layers,
@@ -25,6 +26,7 @@ import {
   Check,
   Copy,
   ChevronRight,
+  Key,
 } from 'lucide-react';
 
 const LS_KEYS = {
@@ -34,9 +36,13 @@ const LS_KEYS = {
   categories: 'wf_categories',
   json: 'wf_json',
   targetFlowId: 'wf_target_flow_id',
+  isStarted: 'wf_is_started',
 };
 
 function App() {
+  const [isStarted, setIsStarted] = useState<boolean>(() => {
+    return sessionStorage.getItem(LS_KEYS.isStarted) === 'true';
+  });
   const [wabaId, setWabaId] = useState(() => localStorage.getItem(LS_KEYS.wabaId) || '1681961039192373');
   const [apiKey, setApiKey] = useState(() => localStorage.getItem(LS_KEYS.apiKey) || 'f1d082de-0c89-11f1-abfb-02c8a5e042bd');
   const [flowName, setFlowName] = useState(() => localStorage.getItem(LS_KEYS.flowName) || 'Flow_domicile_1');
@@ -84,17 +90,21 @@ function App() {
   useEffect(() => { localStorage.setItem(LS_KEYS.categories, JSON.stringify(selectedCategories)); }, [selectedCategories]);
   useEffect(() => { localStorage.setItem(LS_KEYS.json, jsonStr); }, [jsonStr]);
   useEffect(() => { localStorage.setItem(LS_KEYS.targetFlowId, targetFlowId); }, [targetFlowId]);
+  useEffect(() => { sessionStorage.setItem(LS_KEYS.isStarted, isStarted ? 'true' : 'false'); }, [isStarted]);
 
   // Fetch flows list
-  const handleFetchFlows = useCallback(async (quiet = false) => {
-    if (!wabaId.trim() || !apiKey.trim()) {
+  const handleFetchFlows = useCallback(async (quiet = false, overrideWaba?: string, overrideKey?: string) => {
+    const activeWaba = (overrideWaba ?? wabaId).trim();
+    const activeKey = (overrideKey ?? apiKey).trim();
+
+    if (!activeWaba || !activeKey) {
       if (!quiet) addToast('Please provide WABA ID and API key to fetch flows', 'warning');
       return;
     }
 
     setIsLoadingFlows(true);
     try {
-      const res = await listFlows(wabaId.trim(), apiKey.trim());
+      const res = await listFlows(activeWaba, activeKey);
       setFlows(res.data || []);
       if (!quiet) addToast(`Loaded ${res.data?.length || 0} flows from Pinbot API`, 'success');
     } catch (err: unknown) {
@@ -105,12 +115,20 @@ function App() {
     }
   }, [wabaId, apiKey, addToast]);
 
-  // Load flows on initial mount if credentials present
+  // Load flows when studio is active and credentials present
   useEffect(() => {
-    if (wabaId && apiKey) {
+    if (isStarted && wabaId && apiKey) {
       handleFetchFlows(true);
     }
-  }, [handleFetchFlows, wabaId, apiKey]);
+  }, [handleFetchFlows, isStarted, wabaId, apiKey]);
+
+  const handleConnect = (newWabaId: string, newApiKey: string) => {
+    setWabaId(newWabaId);
+    setApiKey(newApiKey);
+    setIsStarted(true);
+    addToast('Connected to WhatsApp Flow Studio!', 'success');
+    handleFetchFlows(false, newWabaId, newApiKey);
+  };
 
   const handleReset = () => {
     setWabaId('');
@@ -123,6 +141,7 @@ function App() {
     setApiResponse(null);
     setApiError(null);
     setUploadErrors(null);
+    setIsStarted(false);
     addToast('All configuration reset', 'info');
   };
 
@@ -292,6 +311,19 @@ function App() {
 
   const currentDisplayFlowName = selectedFlow?.id === targetFlowId ? selectedFlow.name : undefined;
 
+  if (!isStarted) {
+    return (
+      <>
+        <StartingPage
+          initialWabaId={wabaId}
+          initialApiKey={apiKey}
+          onConnect={handleConnect}
+        />
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
+      </>
+    );
+  }
+
   return (
     <div style={{
       height: '100vh',
@@ -344,8 +376,41 @@ function App() {
             marginLeft: 4,
           }}>
             <div style={{ width: 6, height: 6, background: 'var(--accent-green)', borderRadius: '50%', animation: 'pulse-glow 2s infinite' }} />
-            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--accent-green)' }}>API CONNECTED</span>
+            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--accent-green)' }}>CONNECTED</span>
           </div>
+
+          <button
+            onClick={() => setIsStarted(false)}
+            title="Change API Key or WABA ID"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 5,
+              padding: '4px 9px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid var(--border-color)',
+              borderRadius: 'var(--radius-sm)',
+              color: 'var(--text-secondary)',
+              fontSize: 11,
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'var(--transition)',
+              marginLeft: 4,
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.color = 'var(--text-primary)';
+              e.currentTarget.style.borderColor = 'var(--accent-blue)';
+              e.currentTarget.style.background = 'rgba(79, 142, 247, 0.12)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.color = 'var(--text-secondary)';
+              e.currentTarget.style.borderColor = 'var(--border-color)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+            }}
+          >
+            <Key size={11} />
+            <span>Switch Account</span>
+          </button>
         </div>
 
         {/* Selected flow info badge in header */}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Key, Hash, Save, RotateCcw } from 'lucide-react';
+import { Key, Hash, Save, RotateCcw, LogOut } from 'lucide-react';
 
 interface SettingsPanelProps {
   wabaId: string;
@@ -7,6 +7,7 @@ interface SettingsPanelProps {
   onWabaIdChange: (val: string) => void;
   onApiKeyChange: (val: string) => void;
   onReset: () => void;
+  onSwitchAccount?: () => void;
 }
 
 export function SettingsPanel({
@@ -15,6 +16,7 @@ export function SettingsPanel({
   onWabaIdChange,
   onApiKeyChange,
   onReset,
+  onSwitchAccount,
 }: SettingsPanelProps) {
   const [showKey, setShowKey] = React.useState(false);
 
@@ -45,28 +47,54 @@ export function SettingsPanel({
         <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
           API Configuration
         </span>
-        <button
-          onClick={onReset}
-          title="Reset all settings"
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text-muted)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            fontSize: 11,
-            transition: 'var(--transition)',
-            padding: '4px 8px',
-            borderRadius: 'var(--radius-sm)',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent-red)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
-        >
-          <RotateCcw size={11} />
-          Reset
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {onSwitchAccount && (
+            <button
+              onClick={onSwitchAccount}
+              title="Return to starting page to change credentials"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--text-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                fontSize: 11,
+                transition: 'var(--transition)',
+                padding: '4px 6px',
+                borderRadius: 'var(--radius-sm)',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent-blue)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+            >
+              <LogOut size={11} />
+              Switch
+            </button>
+          )}
+          <button
+            onClick={onReset}
+            title="Reset all settings"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--text-muted)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              fontSize: 11,
+              transition: 'var(--transition)',
+              padding: '4px 6px',
+              borderRadius: 'var(--radius-sm)',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent-red)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+          >
+            <RotateCcw size={11} />
+            Reset
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
