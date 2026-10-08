@@ -7,17 +7,11 @@ import type {
   PublishFlowResponse,
 } from './types';
 
-const PINBOT_API_BASE = 'https://partnersv1.pinbot.ai/v3/flows';
+const PINBOT_API_BASE = '/api-pinbot/v3/flows';
 
-// On localhost development, use Vite proxy to prevent CORS issues.
-// In production deployment (e.g. on Render), use direct Pinbot API endpoint.
+// Routes all requests through the same-origin proxy (/api-pinbot)
+// Handled by Vite in dev and by server.js in production Web Service
 const getBaseUrl = () => {
-  if (
-    typeof window !== 'undefined' &&
-    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-  ) {
-    return '/api-pinbot/v3/flows';
-  }
   return PINBOT_API_BASE;
 };
 
